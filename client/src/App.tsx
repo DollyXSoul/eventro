@@ -1,11 +1,12 @@
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import Home from "./components/Home";
 
 function App() {
   return (
     <div>
       <Header />
-      <body className="h-[80vh]"></body>
+      <Home />
       <Footer />
     </div>
   );
