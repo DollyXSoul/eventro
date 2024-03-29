@@ -2,6 +2,7 @@ import express from "express";
 const dotenv = require("dotenv");
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import { prismaClient } from "./lib/db";
 dotenv.config();
 
 async function init() {
@@ -16,10 +17,46 @@ async function init() {
     typeDefs: `
     type Query {
       hello : String
-    }`,
+    }
+    
+    type Mutation {
+      createUser(clerkId: String , email:  String ,username: String , firstName: String ,lastName: String ) : Boolean
+    }
+    
+    
+    `,
     resolvers: {
       Query: {
         hello: () => "Hi from Graphql server",
+      },
+      Mutation: {
+        createUser: async (
+          _,
+          {
+            clerkId,
+            email,
+            username,
+            firstName,
+            lastName,
+          }: {
+            clerkId: string;
+            email: string;
+            username: string;
+            firstName: string;
+            lastName: string;
+          }
+        ) => {
+          await prismaClient.user.create({
+            data: {
+              clerkId,
+              email,
+              username,
+              firstName,
+              lastName,
+            },
+          });
+          return true;
+        },
       },
     },
   });
