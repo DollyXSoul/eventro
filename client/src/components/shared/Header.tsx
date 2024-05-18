@@ -4,9 +4,9 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/clerk-react";
-import { Button } from "./ui/button";
-import NavItems from "./shared/NavItems";
-import MobileNav from "./MobileNav";
+import { Button } from "../ui/button";
+import NavItems from "./NavItems";
+import MobileNav from ".//MobileNav";
 const Header = () => {
   return (
     <header className="header flex p-4 justify-between items-center bg-slate-100">

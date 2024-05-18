@@ -1,7 +1,7 @@
 import { IoMdMenu } from "react-icons/io";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import NavItems from "./shared/NavItems";
+import NavItems from "./NavItems";
 
 const MobileNav = () => {
   return (
