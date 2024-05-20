@@ -1,8 +1,13 @@
-import express from "express";
+import express, { json } from "express";
+import cors from "cors";
+import { uploadRouter } from "./uploadThing";
+import { createRouteHandler } from "uploadthing/express";
 import { Webhook } from "svix";
 import bodyParser from "body-parser";
 import { WebhookEvent } from "../types";
 import { prismaClient as prisma } from "./lib/db";
+import customCorsOptions from "./lib/customCorsOptions";
+import { stringify } from "querystring";
 
 const dotenv = require("dotenv");
 
@@ -11,6 +16,7 @@ dotenv.config();
 const app = express();
 
 const PORT = Number(process.env.PORT) || 8000;
+app.use(cors(customCorsOptions));
 
 app.post(
   "/api/webhooks",
@@ -93,10 +99,18 @@ app.post(
 //use middleware for parsing json
 app.use(express.json());
 
+app.use(
+  "/api/uploadthing",
+  createRouteHandler({
+    router: uploadRouter,
+  })
+);
+
 app.get("/", (req, res) => {
   res.json({ message: "Server is up and running" });
 });
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
+  console.log(JSON.parse(typeof uploadRouter));
 });

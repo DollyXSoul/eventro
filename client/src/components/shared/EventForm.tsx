@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,6 +17,8 @@ import { eventDefaultValues } from "@/constant";
 import { MapPin, CalendarDays } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import DropDown from "./DropDown";
+import FileUploader from "./FileUploader";
 
 type EventFormProps = {
   userId: string;
@@ -32,6 +35,8 @@ const EventForm = ({ userId, type }: EventFormProps) => {
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
+
+  const [files, setFiles] = useState<File[]>([]);
 
   return (
     <Form {...form}>
@@ -56,7 +61,23 @@ const EventForm = ({ userId, type }: EventFormProps) => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="categoryId"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <DropDown
+                    value={field.value}
+                    onChangeHandler={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
+
         <div className="flex flex-col gap-5 md:flex-row">
           <FormField
             control={form.control}
@@ -68,6 +89,22 @@ const EventForm = ({ userId, type }: EventFormProps) => {
                     placeholder="Event description"
                     {...field}
                     className="textarea rounded-2xl"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl className="h-72">
+                  <FileUploader
+                    setFiles={setFiles}
+                    onFieldChange={field.onChange}
+                    imageUrl={field.value}
                   />
                 </FormControl>
                 <FormMessage />
