@@ -7,7 +7,7 @@ import CreateEvent from "./components/CreateEvent";
 function App() {
   return (
     <Router>
-      <div className="flex h-screen flex-col">
+      <div className="font-poppins flex h-screen flex-col">
         <Header />
         <main className="flex-1">
           <Routes>
