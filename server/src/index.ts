@@ -7,7 +7,6 @@ import bodyParser from "body-parser";
 import { WebhookEvent } from "../types";
 import { prismaClient as prisma } from "./lib/db";
 import customCorsOptions from "./lib/customCorsOptions";
-import { stringify } from "querystring";
 
 const dotenv = require("dotenv");
 
@@ -106,11 +105,36 @@ app.use(
   })
 );
 
+app.get("/api/categories", async (req, res) => {
+  try {
+    const categories = await prisma.category.findMany();
+    console.log(categories);
+    res.send(categories);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
+
+app.post("/api/category", async (req, res) => {
+  try {
+    const newCategory = await prisma.category.create({
+      data: {
+        name: req.body.name as string,
+      },
+    });
+
+    res.send(newCategory);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
+
 app.get("/", (req, res) => {
   res.json({ message: "Server is up and running" });
 });
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
-  console.log(JSON.parse(typeof uploadRouter));
 });

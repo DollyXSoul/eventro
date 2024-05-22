@@ -1,8 +1,12 @@
 import { FileRouter } from "uploadthing/internal/types";
 
-type Icategory = {
-  _id: string;
+export type Icategory = {
+  id: string;
   name: string;
+};
+
+export type CreateCategoryParams = {
+  categoryName: string;
 };
 
 export const uploadRouter = {
