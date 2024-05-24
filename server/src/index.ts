@@ -1,4 +1,4 @@
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
 import { uploadRouter } from "./uploadThing";
 import { createRouteHandler } from "uploadthing/express";
@@ -15,7 +15,21 @@ dotenv.config();
 const app = express();
 
 const PORT = Number(process.env.PORT) || 8000;
+
+app.use(express.urlencoded({ extended: false }));
 app.use(cors(customCorsOptions));
+
+app.use(express.json());
+app.use(
+  "/api/uploadthing",
+  createRouteHandler({
+    router: uploadRouter,
+  })
+);
+
+app.get("/api", (req, res) => {
+  res.send("Server is up and running");
+});
 
 app.post(
   "/api/webhooks",
@@ -96,14 +110,6 @@ app.post(
 );
 
 //use middleware for parsing json
-app.use(express.json());
-
-app.use(
-  "/api/uploadthing",
-  createRouteHandler({
-    router: uploadRouter,
-  })
-);
 
 app.get("/api/categories", async (req, res) => {
   try {
@@ -129,10 +135,6 @@ app.post("/api/category", async (req, res) => {
     console.log(error);
     res.status(500).send("Internal server error ");
   }
-});
-
-app.get("/", (req, res) => {
-  res.json({ message: "Server is up and running" });
 });
 
 app.listen(PORT, () => {

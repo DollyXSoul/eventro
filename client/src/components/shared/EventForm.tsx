@@ -20,21 +20,41 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DropDown from "./DropDown";
 import FileUploader from "./FileUploader";
+import { useUploadThing } from "@/lib/uploadThing";
 
 type EventFormProps = {
   userId: string;
   type: "Create" | "Update";
 };
 const EventForm = ({ userId, type }: EventFormProps) => {
+  const { startUpload } = useUploadThing("imageUploader", {
+    skipPolling: true,
+  });
+
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: eventDefaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof eventFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
+    let uploadedImageUrl = values.imageUrl;
+
+    if (files.length > 0) {
+      const uploadedImages = await startUpload(files);
+
+      if (!uploadedImages) {
+        return;
+      }
+
+      uploadedImageUrl = uploadedImages[0].url;
+    }
+
+    const newEvent = {
+      event: { ...values, imageUrl: uploadedImageUrl },
+    };
+
+    console.log(newEvent);
+    form.reset();
   }
 
   const [files, setFiles] = useState<File[]>([]);
@@ -261,7 +281,9 @@ const EventForm = ({ userId, type }: EventFormProps) => {
           />
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? "Submitting..." : `${type} Event `}
+        </Button>
       </form>
     </Form>
   );

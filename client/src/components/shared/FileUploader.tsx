@@ -1,6 +1,5 @@
-import { SetStateAction, Dispatch, useCallback } from "react";
+import { useCallback } from "react";
 import { convertFileToUrl } from "@/lib/utils";
-import { OurFileRouter } from "@/types";
 import { CloudUpload } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -9,11 +8,9 @@ type FileUploaderProps = {
   onFieldChange: (url: string) => void;
   setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 };
-const ROUTER_URL = import.meta.env.VITE_FILE_ROUTER_URL;
 
 import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
-import { useUploadThing } from "../../lib/utils";
 
 const FileUploader = ({
   imageUrl,
