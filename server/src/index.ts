@@ -16,21 +16,6 @@ const app = express();
 
 const PORT = Number(process.env.PORT) || 8000;
 
-app.use(express.urlencoded({ extended: false }));
-app.use(cors(customCorsOptions));
-
-app.use(express.json());
-app.use(
-  "/api/uploadthing",
-  createRouteHandler({
-    router: uploadRouter,
-  })
-);
-
-app.get("/api", (req, res) => {
-  res.send("Server is up and running");
-});
-
 app.post(
   "/api/webhooks",
   bodyParser.raw({ type: "application/json" }),
@@ -109,6 +94,20 @@ app.post(
   }
 );
 
+app.use(express.urlencoded({ extended: false }));
+app.use(cors(customCorsOptions));
+app.use(express.json());
+app.use(
+  "/api/uploadthing",
+  createRouteHandler({
+    router: uploadRouter,
+  })
+);
+
+app.get("/api", (req, res) => {
+  res.send("Server is up and running");
+});
+
 //use middleware for parsing json
 
 app.get("/api/categories", async (req, res) => {
@@ -131,6 +130,58 @@ app.post("/api/category", async (req, res) => {
     });
 
     res.send(newCategory);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
+app.post("/api/event", async (req, res) => {
+  const { userId, event } = req.body;
+
+  const {
+    title,
+    description,
+    location,
+    imageUrl,
+    startDateTime,
+    endDateTime,
+    isFree,
+    price,
+    url,
+    categoryId,
+  } = event;
+  try {
+    const organizer = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+    });
+
+    if (!organizer) {
+      res.status(401).send("User does not exist");
+    }
+
+    const newEvent = await prisma.event.create({
+      data: {
+        title,
+        description,
+        location,
+        imageUrl,
+        startDateTime,
+        endDateTime,
+        isFree,
+        price,
+        url,
+        categoryId,
+        organizer: {
+          connect: {
+            clerkId: userId,
+          },
+        },
+      },
+    });
+
+    res.send(newEvent);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal server error ");

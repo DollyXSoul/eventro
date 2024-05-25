@@ -21,6 +21,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import DropDown from "./DropDown";
 import FileUploader from "./FileUploader";
 import { useUploadThing } from "@/lib/uploadThing";
+import { createEvent } from "@/api/events";
+import { Event } from "@/types";
 
 type EventFormProps = {
   userId: string;
@@ -49,11 +51,18 @@ const EventForm = ({ userId, type }: EventFormProps) => {
       uploadedImageUrl = uploadedImages[0].url;
     }
 
-    const newEvent = {
-      event: { ...values, imageUrl: uploadedImageUrl },
-    };
+    try {
+      const newEvent = await createEvent({
+        userId,
+        event: { ...values, imageUrl: uploadedImageUrl },
+      });
+      console.log(newEvent);
+      alert("Event created successfully");
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred");
+    }
 
-    console.log(newEvent);
     form.reset();
   }
 

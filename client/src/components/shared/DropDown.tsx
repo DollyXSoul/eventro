@@ -20,7 +20,7 @@ import {
 import { startTransition, useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import type { Icategory } from "@/types";
-import { getAllCategories, createCategory } from "@/lib/category";
+import { getAllCategories, createCategory } from "@/api/category";
 
 type DropDownProps = {
   value?: string;
