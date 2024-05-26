@@ -22,13 +22,15 @@ import DropDown from "./DropDown";
 import FileUploader from "./FileUploader";
 import { useUploadThing } from "@/lib/uploadThing";
 import { createEvent } from "@/api/events";
-import { Event } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 type EventFormProps = {
   userId: string;
   type: "Create" | "Update";
 };
 const EventForm = ({ userId, type }: EventFormProps) => {
+  const navigate = useNavigate();
+
   const { startUpload } = useUploadThing("imageUploader", {
     skipPolling: true,
   });
@@ -57,13 +59,13 @@ const EventForm = ({ userId, type }: EventFormProps) => {
         event: { ...values, imageUrl: uploadedImageUrl },
       });
       console.log(newEvent);
-      alert("Event created successfully");
+      form.reset();
+      // alert("Event created successfully");
+      navigate(`/events/${newEvent.id}`);
     } catch (err) {
       console.error(err);
       alert("An error occurred");
     }
-
-    form.reset();
   }
 
   const [files, setFiles] = useState<File[]>([]);

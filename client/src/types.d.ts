@@ -5,6 +5,15 @@ export type Icategory = {
   name: string;
 };
 
+export type Organizer = {
+  clerkId: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  photo: string | null;
+};
+
 export type Event = {
   id: string;
   title: string;
@@ -39,6 +48,11 @@ export type CreateEventParams = {
     url: string;
   };
 };
+
+export interface EventDetailResponse extends Event {
+  category: Icategory;
+  organizer: Organizer;
+}
 
 export const uploadRouter = {
   imageUploader: f({

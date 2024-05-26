@@ -28,6 +28,7 @@ model User {
 model Category {
   id    String  @id @default(uuid())
   name  String  @unique
+  events   Event[]
   @@map("categories")
 }
 
@@ -44,7 +45,8 @@ model Event {
   price         String?    
   isFree        Boolean    @default(false) 
   url           String?    
-  categoryId    String?
+  categoryId    String
   organizerId   String
+  category      Category @relation(fields: [categoryId] , references:[id])
   organizer     User      @relation(fields : [organizerId] , references: [clerkId])
 }

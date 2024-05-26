@@ -172,16 +172,46 @@ app.post("/api/event", async (req, res) => {
         isFree,
         price,
         url,
-        categoryId,
         organizer: {
           connect: {
             clerkId: userId,
+          },
+        },
+        category: {
+          connect: {
+            id: categoryId,
           },
         },
       },
     });
 
     res.send(newEvent);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
+
+app.get("/api/event/:eventId", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const eventDetail = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+      include: {
+        organizer: {
+          select: {
+            firstName: true,
+            lastName: true,
+            clerkId: true,
+          },
+        },
+        category: true,
+      },
+    });
+    //console.log(categories);
+    res.send(eventDetail);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal server error ");
