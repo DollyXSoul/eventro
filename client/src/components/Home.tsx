@@ -1,5 +1,27 @@
+import { useState, useEffect } from "react";
+import { Event } from "@/types";
+import Collection from "./shared/Collection";
 import { Button } from "./ui/button";
+import { getAllEvents } from "@/api/events";
 const Home = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    const getEvents = async () => {
+      const events = await getAllEvents({
+        query: "",
+        category: "",
+        page: 1,
+        limit: 6,
+      });
+
+      console.log(events);
+      events && setEvents(events);
+    };
+
+    getEvents();
+  }, []);
+
   return (
     <>
       <section className="bg-primary-50 bg-contain py-5 md:py-10 bg-slate-200">
@@ -39,6 +61,15 @@ const Home = () => {
         <div className="flex w-full flex-col gap-5 md:flex-row">
           Search CategoryFilter
         </div>
+        <Collection
+          data={events}
+          emptyTitle="No Events Found"
+          emptyStateSubtext="Come back later"
+          collectionType="All_Events"
+          limit={6}
+          page={1}
+          totalPages={2}
+        />
       </section>
     </>
   );

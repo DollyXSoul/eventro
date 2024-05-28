@@ -48,6 +48,12 @@ export type CreateEventParams = {
     url: string;
   };
 };
+export type GetAllEventsParams = {
+  query: string;
+  category: string;
+  limit: number;
+  page: number;
+};
 
 export interface EventDetailResponse extends Event {
   category: Icategory;

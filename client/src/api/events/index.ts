@@ -1,4 +1,9 @@
-import { CreateEventParams, EventDetailResponse } from "@/types";
+import {
+  CreateEventParams,
+  EventDetailResponse,
+  GetAllEventsParams,
+  Event,
+} from "@/types";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -26,5 +31,28 @@ export const getEventDetail = async ({ eventId }: { eventId: string }) => {
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+export const getAllEvents = async ({
+  query,
+  category,
+  limit = 6,
+  page,
+}: GetAllEventsParams) => {
+  try {
+    const data = await axios.get(`${BASE_URL}/api/events`, {
+      params: {
+        query,
+        category,
+        page,
+        limit,
+      },
+    });
+
+    const res: Event[] = data.data.data;
+    return res;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

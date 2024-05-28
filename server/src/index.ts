@@ -1,4 +1,5 @@
 import express from "express";
+import { Request, Response } from "express";
 import cors from "cors";
 import { uploadRouter } from "./uploadThing";
 import { createRouteHandler } from "uploadthing/express";
@@ -217,6 +218,71 @@ app.get("/api/event/:eventId", async (req, res) => {
     res.status(500).send("Internal server error ");
   }
 });
+
+async function getAllEvents(req: Request, res: Response) {
+  //const { query, limit = 6, page = 1, category }= req.query;
+  const query = req.query.query as string | undefined;
+  const limit = Number(req.query.limit) || 6;
+  const page = Number(req.query.page) || 1;
+  const category = req.query.category as string | undefined;
+
+  try {
+    const titleCondition = query
+      ? { title: { contains: query, mode: "insensitive" as const } }
+      : {};
+    let categoryCondition: { categoryId?: string } = {};
+
+    if (category) {
+      const foundCategory = await prisma.category.findUnique({
+        where: {
+          name: query,
+        },
+      });
+      if (foundCategory) {
+        categoryCondition = { categoryId: foundCategory.id };
+      } else {
+        return res.status(404).json({ error: "Category not found" });
+      }
+    }
+
+    const conditions = {
+      AND: [titleCondition, categoryCondition],
+    };
+
+    const skipAmount = (Number(page) - 1) * Number(limit);
+
+    const events = await prisma.event.findMany({
+      where: conditions,
+      orderBy: { createdAt: "desc" },
+      skip: skipAmount,
+      take: Number(limit),
+      include: {
+        organizer: {
+          select: {
+            firstName: true,
+            lastName: true,
+            clerkId: true,
+          },
+        },
+        category: true,
+      }, // Include related category data if needed
+    });
+
+    const eventsCount = await prisma.event.count({
+      where: conditions,
+    });
+
+    res.json({
+      data: events,
+      totalPages: Math.ceil(eventsCount / limit),
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+app.get("/api/events", getAllEvents);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
