@@ -55,7 +55,7 @@ export type GetAllEventsParams = {
   page: number;
 };
 
-export interface EventDetailResponse extends Event {
+export interface EventApiResponse extends Event {
   category: Icategory;
   organizer: Organizer;
 }

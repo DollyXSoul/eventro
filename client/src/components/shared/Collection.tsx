@@ -1,6 +1,8 @@
-import { Event } from "@/types";
+import { EventApiResponse } from "@/types";
+import Card from "./Card";
+
 type CollectionProps = {
-  data: Event[];
+  data: EventApiResponse[];
   emptyTitle: string;
   emptyStateSubtext: string;
   limit: number;
@@ -23,9 +25,23 @@ const Collection = ({
     <>
       {data.length > 0 ? (
         <div className="flex flex-col items-center gap-10">
-          {data.map((event) => {
-            return <p key={event.id}> {event.title}</p>;
-          })}
+          <ul className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 xl:gap-10">
+            {data.map((event) => {
+              const hasOrderLink = collectionType === "Events_Organized";
+              const hidePrice = collectionType === "My_Tickets";
+
+              return (
+                <li key={event.id} className="flex justify-center">
+                  {" "}
+                  <Card
+                    event={event}
+                    hasOrderLink={hasOrderLink}
+                    hidePrice={hidePrice}
+                  />
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ) : (
         <div className="flex-center wrapper min-h-[200px] w-full flex-col gap-3 rounded-[14px] bg-slate-100 py-28 text-center">

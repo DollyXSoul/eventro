@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { EventDetailResponse } from "@/types";
+import { EventApiResponse } from "@/types";
 import { getEventDetail } from "@/api/events";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
@@ -8,9 +8,7 @@ import { formatDateTime } from "@/lib/utils";
 const EventDetail = () => {
   const { eventId } = useParams<string>() as { eventId: string };
 
-  const [eventDetail, setEventDetail] = useState<EventDetailResponse | null>(
-    null
-  );
+  const [eventDetail, setEventDetail] = useState<EventApiResponse | null>(null);
 
   useEffect(() => {
     const getEvents = async () => {

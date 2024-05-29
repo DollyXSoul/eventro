@@ -1,8 +1,8 @@
 import {
   CreateEventParams,
-  EventDetailResponse,
   GetAllEventsParams,
   Event,
+  EventApiResponse,
 } from "@/types";
 import axios from "axios";
 
@@ -26,7 +26,7 @@ export const getEventDetail = async ({ eventId }: { eventId: string }) => {
   try {
     const data = await axios.get(`${BASE_URL}/api/event/${eventId}`);
 
-    const res: EventDetailResponse = data.data;
+    const res: EventApiResponse = data.data;
     return res;
   } catch (error) {
     console.error(error);
@@ -49,7 +49,7 @@ export const getAllEvents = async ({
       },
     });
 
-    const res: Event[] = data.data.data;
+    const res: EventApiResponse[] = data.data.data;
     return res;
   } catch (error) {
     console.error(error);
