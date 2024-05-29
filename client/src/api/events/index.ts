@@ -56,3 +56,14 @@ export const getAllEvents = async ({
     return [];
   }
 };
+
+export const deleteEvent = async ({ eventId }: { eventId: string }) => {
+  try {
+    const data = await axios.delete(`${BASE_URL}/api/event/${eventId}`);
+
+    const res = data;
+    console.log(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};

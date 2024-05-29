@@ -284,6 +284,22 @@ async function getAllEvents(req: Request, res: Response) {
 
 app.get("/api/events", getAllEvents);
 
+app.delete("/api/event/:eventId", async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const result = await prisma.event.delete({
+      where: {
+        id: eventId,
+      },
+    });
+    //console.log(categories);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`[server]: Server is running at http://localhost:${PORT}`);
 });

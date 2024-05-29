@@ -1,0 +1,55 @@
+import { useTransition } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteEvent } from "@/api/events";
+import { Trash2 } from "lucide-react";
+export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
+  //const pathname = usePathname()
+  let [isPending, startTransition] = useTransition();
+  const navigate = useNavigate();
+
+  /*  const deleteCurrentEvent = async () => {
+    
+  };*/
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger>
+        <Trash2 width={20} height={20} />
+      </AlertDialogTrigger>
+
+      <AlertDialogContent className="bg-white">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure you want to delete?</AlertDialogTitle>
+          <AlertDialogDescription className="p-regular-16 text-grey-600">
+            This will permanently delete this event
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+          <AlertDialogAction
+            onClick={() => {
+              startTransition(() => {
+                deleteEvent({ eventId }).then(() => navigate(0));
+              });
+            }}
+          >
+            {isPending ? "Deleting..." : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
