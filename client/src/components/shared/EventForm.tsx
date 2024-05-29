@@ -21,23 +21,35 @@ import "react-datepicker/dist/react-datepicker.css";
 import DropDown from "./DropDown";
 import FileUploader from "./FileUploader";
 import { useUploadThing } from "@/lib/uploadThing";
-import { createEvent } from "@/api/events";
+import { createEvent, updateEvent } from "@/api/events";
 import { useNavigate } from "react-router-dom";
+import { EventApiResponse } from "@/types";
 
 type EventFormProps = {
   userId: string;
   type: "Create" | "Update";
+  event?: EventApiResponse;
+  eventId?: string;
 };
-const EventForm = ({ userId, type }: EventFormProps) => {
+const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
   const navigate = useNavigate();
 
   const { startUpload } = useUploadThing("imageUploader", {
     skipPolling: true,
   });
 
+  const initialValues =
+    event && type === "Update"
+      ? {
+          ...event,
+          startDateTime: new Date(event.startDateTime),
+          endDateTime: new Date(event.endDateTime),
+        }
+      : eventDefaultValues;
+
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
-    defaultValues: eventDefaultValues,
+    defaultValues: initialValues,
   });
 
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {
@@ -53,18 +65,41 @@ const EventForm = ({ userId, type }: EventFormProps) => {
       uploadedImageUrl = uploadedImages[0].url;
     }
 
-    try {
-      const newEvent = await createEvent({
-        userId,
-        event: { ...values, imageUrl: uploadedImageUrl },
-      });
-      console.log(newEvent);
-      form.reset();
-      // alert("Event created successfully");
-      navigate(`/events/${newEvent.id}`);
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred");
+    if (type === "Create") {
+      try {
+        const newEvent = await createEvent({
+          userId,
+          event: { ...values, imageUrl: uploadedImageUrl },
+        });
+        // console.log(newEvent);
+        form.reset();
+        // alert("Event created successfully");
+        navigate(`/events/${newEvent.id}`);
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred");
+      }
+    }
+
+    if (type === "Update") {
+      if (!eventId) {
+        navigate(-1);
+        return;
+      }
+
+      try {
+        const updatedEvent = await updateEvent({
+          userId,
+          event: { ...values, imageUrl: uploadedImageUrl, id: eventId },
+        });
+
+        if (updatedEvent) {
+          form.reset();
+          navigate(`/events/${updatedEvent.id}`);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 

@@ -48,6 +48,22 @@ export type CreateEventParams = {
     url: string;
   };
 };
+export type UpdateEventParams = {
+  userId: string;
+  event: {
+    title: string;
+    description: string;
+    location: string;
+    imageUrl: string;
+    startDateTime: Date;
+    endDateTime: Date;
+    categoryId: string;
+    price: string;
+    isFree: boolean;
+    url: string;
+    id: string;
+  };
+};
 export type GetAllEventsParams = {
   query: string;
   category: string;

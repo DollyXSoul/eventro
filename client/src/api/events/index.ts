@@ -1,5 +1,6 @@
 import {
   CreateEventParams,
+  UpdateEventParams,
   GetAllEventsParams,
   Event,
   EventApiResponse,
@@ -22,7 +23,21 @@ export const createEvent = async ({ userId, event }: CreateEventParams) => {
     return {};
   }
 };
-export const getEventDetail = async ({ eventId }: { eventId: string }) => {
+export const updateEvent = async ({ userId, event }: UpdateEventParams) => {
+  try {
+    const data = await axios.put(`${BASE_URL}/api/event`, {
+      userId,
+      event,
+    });
+
+    const res = data.data;
+    return res;
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+};
+export const getEventById = async ({ eventId }: { eventId: string }) => {
   try {
     const data = await axios.get(`${BASE_URL}/api/event/${eventId}`);
 

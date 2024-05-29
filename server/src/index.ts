@@ -192,6 +192,66 @@ app.post("/api/event", async (req, res) => {
     res.status(500).send("Internal server error ");
   }
 });
+app.put("/api/event", async (req, res) => {
+  const { userId, event } = req.body;
+
+  const {
+    title,
+    description,
+    location,
+    imageUrl,
+    startDateTime,
+    endDateTime,
+    isFree,
+    price,
+    url,
+    categoryId,
+    id,
+  } = event;
+
+  try {
+    const eventFound = await prisma.event.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!eventFound) {
+      res.status(404).send("Event does not exist");
+    }
+
+    if (eventFound?.organizerId.toString() !== userId) {
+      res.status(401).send("User not authorized to modify this event");
+    }
+
+    const updated = await prisma.event.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        description,
+        location,
+        imageUrl,
+        startDateTime,
+        endDateTime,
+        isFree,
+        price,
+        url,
+        category: {
+          connect: {
+            id: categoryId,
+          },
+        },
+      },
+    });
+
+    res.send(updated);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error ");
+  }
+});
 
 app.get("/api/event/:eventId", async (req, res) => {
   try {
