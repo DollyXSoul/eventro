@@ -342,6 +342,45 @@ async function getAllEvents(req: Request, res: Response) {
   }
 }
 
+app.get("/api/events/by-user", async (req: Request, res: Response) => {
+  const userId = req.query.query as string | undefined;
+  const limit = Number(req.query.limit) || 6;
+  const page = Number(req.query.page) || 1;
+
+  try {
+    const skipAmount = (Number(page) - 1) * Number(limit);
+
+    const events = await prisma.event.findMany({
+      where: { organizerId: userId },
+      skip: skipAmount,
+      take: Number(limit),
+      orderBy: { createdAt: "desc" },
+      include: {
+        organizer: {
+          select: {
+            firstName: true,
+            lastName: true,
+            clerkId: true,
+          },
+        },
+        category: true,
+      },
+    });
+
+    const eventsCount = await prisma.event.count({
+      where: { organizerId: userId },
+    });
+
+    res.json({
+      data: events,
+      totalPages: Math.ceil(eventsCount / Number(limit)),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 app.get("/api/events", getAllEvents);
 
 app.delete("/api/event/:eventId", async (req, res) => {

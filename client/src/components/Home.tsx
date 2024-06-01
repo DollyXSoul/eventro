@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Event } from "@/types";
+import { EventApiResponse } from "@/types";
 import Collection from "./shared/Collection";
 import { Button } from "./ui/button";
 import { getAllEvents } from "@/api/events";
 const Home = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventApiResponse[]>([]);
 
   useEffect(() => {
     const getEvents = async () => {

@@ -2,7 +2,7 @@ import {
   CreateEventParams,
   UpdateEventParams,
   GetAllEventsParams,
-  Event,
+  GetEventsByUserParams,
   EventApiResponse,
 } from "@/types";
 import axios from "axios";
@@ -65,6 +65,29 @@ export const getAllEvents = async ({
     });
 
     const res: EventApiResponse[] = data.data.data;
+    return res;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+export const getEventsByUser = async ({
+  userId,
+  limit = 6,
+  page = 1,
+}: GetEventsByUserParams) => {
+  try {
+    const data = await axios.get(`${BASE_URL}/api/events/by-user`, {
+      params: {
+        userId,
+        page,
+        limit,
+      },
+    });
+
+    const res: EventApiResponse[] = data.data.data;
+    const pageCount: Number = data.data.totalPages;
     return res;
   } catch (error) {
     console.error(error);

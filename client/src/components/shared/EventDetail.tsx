@@ -1,14 +1,16 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { EventApiResponse } from "@/types";
-import { getEventById } from "@/api/events";
+import { getEventById, getEventsByUser } from "@/api/events";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import Collection from "./Collection";
 
 const EventDetail = () => {
   const { eventId } = useParams<string>() as { eventId: string };
 
   const [eventDetail, setEventDetail] = useState<EventApiResponse | null>(null);
+  const [relatedEvents, setRelatedEvents] = useState<EventApiResponse[]>([]);
 
   useEffect(() => {
     const getEvents = async () => {
@@ -16,6 +18,17 @@ const EventDetail = () => {
 
       console.log(eventDetail);
       eventDetail && setEventDetail(eventDetail);
+      if (eventDetail) {
+        const userId = eventDetail.organizerId;
+
+        const relatedEventsByUser = await getEventsByUser({
+          userId,
+          page: 1,
+          limit: 6,
+        });
+
+        relatedEventsByUser && setRelatedEvents(relatedEventsByUser);
+      }
     };
 
     getEvents();
@@ -99,6 +112,22 @@ const EventDetail = () => {
               </div>
             </div>
           </div>
+        </section>
+      )}
+
+      {relatedEvents && (
+        <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
+          <h2 className="h2-bold">Related Events</h2>
+
+          <Collection
+            data={relatedEvents}
+            emptyTitle="No Events Found"
+            emptyStateSubtext="Come back later"
+            collectionType="All_Events"
+            limit={3}
+            page={1}
+            totalPages={1}
+          />
         </section>
       )}
     </>

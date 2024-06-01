@@ -70,6 +70,11 @@ export type GetAllEventsParams = {
   limit: number;
   page: number;
 };
+export type GetEventsByUserParams = {
+  userId: string;
+  limit: number;
+  page: number;
+};
 
 export interface EventApiResponse extends Event {
   category: Icategory;
