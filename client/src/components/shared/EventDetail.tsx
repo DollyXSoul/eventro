@@ -5,6 +5,7 @@ import { getEventById, getEventsByUser } from "@/api/events";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import Collection from "./Collection";
+import CheckoutButton from "./CheckoutButton";
 
 const EventDetail = () => {
   const { eventId } = useParams<string>() as { eventId: string };
@@ -75,7 +76,7 @@ const EventDetail = () => {
                 </div>
               </div>
 
-              {/*<CheckoutButton event={eventDetail} /> */}
+              <CheckoutButton event={eventDetail} />
 
               <div className="flex flex-col gap-5">
                 <div className="flex gap-2 md:gap-3">

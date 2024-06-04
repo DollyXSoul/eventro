@@ -2,7 +2,7 @@ import { EventApiResponse } from "@/types";
 import { formatDateTime } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
-import { SquarePen } from "lucide-react";
+import { SquarePen, ArrowRight } from "lucide-react";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 type CardProps = {
   event: EventApiResponse;
@@ -12,7 +12,7 @@ type CardProps = {
 
 const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
   const { userId } = useAuth();
-  const isEventCreator = userId === event.organizer.clerkId.toString();
+  const isEventCreator = userId === event.organizer.clerkId;
 
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
@@ -36,7 +36,7 @@ const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
         {!hidePrice && (
           <div className="flex gap-2">
             <span className="p-semibold-14 w-min rounded-full bg-green-100 px-4 py-1 text-green-60">
-              {event.isFree ? "FREE" : `$${event.price}`}
+              {event.isFree ? "FREE" : `₹${event.price}`}
             </span>
             <p className="p-semibold-14 w-min rounded-full bg-grey-500/10 px-4 py-1 text-grey-500 line-clamp-1">
               {event.category.name}
@@ -62,12 +62,7 @@ const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
           {hasOrderLink && (
             <Link to={`/orders?eventId=${event.id}`} className="flex gap-2">
               <p className="text-primary-500">Order Details</p>
-              <img
-                src="/assets/icons/arrow.svg"
-                alt="search"
-                width={10}
-                height={10}
-              />
+              <ArrowRight />
             </Link>
           )}
         </div>
