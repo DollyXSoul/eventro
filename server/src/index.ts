@@ -295,7 +295,7 @@ async function getAllEvents(req: Request, res: Response) {
     if (category) {
       const foundCategory = await prisma.category.findUnique({
         where: {
-          name: query,
+          name: category,
         },
       });
       if (foundCategory) {

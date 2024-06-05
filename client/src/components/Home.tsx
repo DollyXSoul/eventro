@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { getAllEvents } from "@/api/events";
 import Search from "./shared/Search";
 import { useSearchParams } from "react-router-dom";
+import CategoryFilter from "./shared/CategoryFilter";
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -67,7 +68,8 @@ const Home = () => {
         </h2>
 
         <div className="flex w-full flex-col gap-5 md:flex-row">
-          <Search /> CategoryFilter
+          <Search />
+          <CategoryFilter />
         </div>
         <Collection
           data={events}
