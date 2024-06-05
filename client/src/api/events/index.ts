@@ -52,7 +52,7 @@ export const getAllEvents = async ({
   query,
   category,
   limit = 6,
-  page,
+  page = 1,
 }: GetAllEventsParams) => {
   try {
     const data = await axios.get(`${BASE_URL}/api/events`, {

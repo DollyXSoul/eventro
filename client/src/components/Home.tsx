@@ -3,15 +3,23 @@ import { EventApiResponse } from "@/types";
 import Collection from "./shared/Collection";
 import { Button } from "./ui/button";
 import { getAllEvents } from "@/api/events";
+import Search from "./shared/Search";
+import { useSearchParams } from "react-router-dom";
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const page = Number(searchParams.get("page")) || 1;
+  const searchText = searchParams.get("query") || "";
+  const category = searchParams.get("category") || "";
+
   const [events, setEvents] = useState<EventApiResponse[]>([]);
 
   useEffect(() => {
     const getEvents = async () => {
       const events = await getAllEvents({
-        query: "",
-        category: "",
-        page: 1,
+        query: searchText,
+        category,
+        page,
         limit: 6,
       });
 
@@ -20,7 +28,7 @@ const Home = () => {
     };
 
     getEvents();
-  }, []);
+  }, [searchText, category, page]);
 
   return (
     <>
@@ -59,7 +67,7 @@ const Home = () => {
         </h2>
 
         <div className="flex w-full flex-col gap-5 md:flex-row">
-          Search CategoryFilter
+          <Search /> CategoryFilter
         </div>
         <Collection
           data={events}

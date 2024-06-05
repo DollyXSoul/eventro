@@ -81,6 +81,17 @@ export interface EventApiResponse extends Event {
   organizer: Organizer;
 }
 
+export type UrlQueryParams = {
+  params: string;
+  key: string;
+  value: string | null;
+};
+
+export type RemoveUrlQueryParams = {
+  params: string;
+  keysToRemove: string[];
+};
+
 export const uploadRouter = {
   imageUploader: f({
     image: {
