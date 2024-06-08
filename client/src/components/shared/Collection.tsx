@@ -1,8 +1,9 @@
-import { EventApiResponse } from "@/types";
+import { EventItem } from "@/types";
 import Card from "./Card";
+import Pagination from "./Pagination";
 
 type CollectionProps = {
-  data: EventApiResponse[];
+  data: EventItem[];
   emptyTitle: string;
   emptyStateSubtext: string;
   limit: number;
@@ -42,6 +43,14 @@ const Collection = ({
               );
             })}
           </ul>
+
+          {totalPages > 1 && (
+            <Pagination
+              urlParamName={urlParamName}
+              page={page}
+              totalPages={totalPages}
+            />
+          )}
         </div>
       ) : (
         <div className="flex-center wrapper min-h-[200px] w-full flex-col gap-3 rounded-[14px] bg-slate-100 py-28 text-center">

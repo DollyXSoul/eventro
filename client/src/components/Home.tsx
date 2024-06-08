@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { EventApiResponse } from "@/types";
+import { EventsApiResponse } from "@/types";
 import Collection from "./shared/Collection";
 import { Button } from "./ui/button";
 import { getAllEvents } from "@/api/events";
@@ -13,19 +13,22 @@ const Home = () => {
   const searchText = searchParams.get("query") || "";
   const category = searchParams.get("category") || "";
 
-  const [events, setEvents] = useState<EventApiResponse[]>([]);
+  const [events, setEvents] = useState<EventsApiResponse>({
+    data: [],
+    totalPages: 0,
+  });
 
   useEffect(() => {
     const getEvents = async () => {
-      const events = await getAllEvents({
+      const res: EventsApiResponse = await getAllEvents({
         query: searchText,
         category,
         page,
-        limit: 6,
+        limit: 2,
       });
 
-      console.log(events);
-      events && setEvents(events);
+      res && setEvents(res);
+      console.log(res);
     };
 
     getEvents();
@@ -72,13 +75,13 @@ const Home = () => {
           <CategoryFilter />
         </div>
         <Collection
-          data={events}
+          data={events.data}
           emptyTitle="No Events Found"
           emptyStateSubtext="Come back later"
           collectionType="All_Events"
-          limit={6}
-          page={1}
-          totalPages={2}
+          limit={2}
+          page={page}
+          totalPages={events.totalPages}
         />
       </section>
     </>

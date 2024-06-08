@@ -3,7 +3,8 @@ import {
   UpdateEventParams,
   GetAllEventsParams,
   GetEventsByUserParams,
-  EventApiResponse,
+  EventsApiResponse,
+  EventItem,
 } from "@/types";
 import axios from "axios";
 
@@ -41,7 +42,7 @@ export const getEventById = async ({ eventId }: { eventId: string }) => {
   try {
     const data = await axios.get(`${BASE_URL}/api/event/${eventId}`);
 
-    const res: EventApiResponse = data.data;
+    const res: EventItem = data.data;
     return res;
   } catch (error) {
     console.error(error);
@@ -64,11 +65,14 @@ export const getAllEvents = async ({
       },
     });
 
-    const res: EventApiResponse[] = data.data.data;
+    const res: EventsApiResponse = data.data;
     return res;
   } catch (error) {
     console.error(error);
-    return [];
+    return {
+      data: [],
+      totalPages: 0,
+    };
   }
 };
 
@@ -86,12 +90,15 @@ export const getEventsByUser = async ({
       },
     });
 
-    const res: EventApiResponse[] = data.data.data;
-    const pageCount: Number = data.data.totalPages;
+    const res: EventsApiResponse = data.data;
+    // const pageCount: Number = data.data.totalPages;
     return res;
   } catch (error) {
     console.error(error);
-    return [];
+    return {
+      data: [],
+      totalPages: 0,
+    };
   }
 };
 

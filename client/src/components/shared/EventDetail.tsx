@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { EventApiResponse } from "@/types";
+import { EventItem, EventsApiResponse } from "@/types";
 import { getEventById, getEventsByUser } from "@/api/events";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
@@ -9,9 +9,15 @@ import CheckoutButton from "./CheckoutButton";
 
 const EventDetail = () => {
   const { eventId } = useParams<string>() as { eventId: string };
+  const [searchParams] = useSearchParams();
 
-  const [eventDetail, setEventDetail] = useState<EventApiResponse | null>(null);
-  const [relatedEvents, setRelatedEvents] = useState<EventApiResponse[]>([]);
+  const page = Number(searchParams.get("page")) || 1;
+
+  const [eventDetail, setEventDetail] = useState<EventItem | null>(null);
+  const [relatedEvents, setRelatedEvents] = useState<EventsApiResponse>({
+    data: [],
+    totalPages: 0,
+  });
 
   useEffect(() => {
     const getEvents = async () => {
@@ -24,8 +30,8 @@ const EventDetail = () => {
 
         const relatedEventsByUser = await getEventsByUser({
           userId,
-          page: 1,
-          limit: 6,
+          page,
+          limit: 2,
         });
 
         relatedEventsByUser && setRelatedEvents(relatedEventsByUser);
@@ -33,7 +39,7 @@ const EventDetail = () => {
     };
 
     getEvents();
-  }, []);
+  }, [page]);
 
   if (!eventDetail) {
     return <div>Showing post</div>;
@@ -121,13 +127,13 @@ const EventDetail = () => {
           <h2 className="h2-bold">Related Events</h2>
 
           <Collection
-            data={relatedEvents}
+            data={relatedEvents.data}
             emptyTitle="No Events Found"
             emptyStateSubtext="Come back later"
             collectionType="All_Events"
-            limit={3}
-            page={1}
-            totalPages={1}
+            limit={2}
+            page={page}
+            totalPages={relatedEvents.totalPages}
           />
         </section>
       )}

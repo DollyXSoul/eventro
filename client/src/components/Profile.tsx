@@ -2,32 +2,36 @@ import Collection from "@/components/shared/Collection";
 import { Button } from "@/components/ui/button";
 import { getEventsByUser } from "@/api/events";
 import { useAuth } from "@clerk/clerk-react";
-import { Link } from "react-router-dom";
-import { EventApiResponse } from "@/types";
+import { Link, useSearchParams } from "react-router-dom";
+import { EventsApiResponse } from "@/types";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
   const { userId } = useAuth();
 
-  const [organizedEvents, setOrganizedEvents] = useState<EventApiResponse[]>(
-    []
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+
+  const [organizedEvents, setOrganizedEvents] = useState<EventsApiResponse>({
+    data: [],
+    totalPages: 0,
+  });
 
   useEffect(() => {
     const getEvents = async () => {
       if (userId) {
-        const eventsByUser = await getEventsByUser({
+        const res = await getEventsByUser({
           userId,
-          page: 1,
-          limit: 6,
+          page,
+          limit: 2,
         });
 
-        eventsByUser && setOrganizedEvents(eventsByUser);
+        res && setOrganizedEvents(res);
       }
     };
 
     getEvents();
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -53,14 +57,13 @@ const Profile = () => {
 
       <section className="wrapper my-8">
         <Collection
-          data={organizedEvents}
+          data={organizedEvents.data}
           emptyTitle="No events have been created yet"
           emptyStateSubtext="Go create some now"
           collectionType="Events_Organized"
-          limit={3}
-          page={1}
-          urlParamName="eventsPage"
-          totalPages={1}
+          limit={2}
+          page={page}
+          totalPages={organizedEvents.totalPages}
         />
       </section>
     </>

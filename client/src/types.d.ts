@@ -76,9 +76,14 @@ export type GetEventsByUserParams = {
   page: number;
 };
 
-export interface EventApiResponse extends Event {
+export interface EventItem extends Event {
   category: Icategory;
   organizer: Organizer;
+}
+
+export interface EventsApiResponse {
+  data: EventItem[];
+  totalPages: number;
 }
 
 export type UrlQueryParams = {
