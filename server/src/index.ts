@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
 import cors from "cors";
+import Stripe from "stripe";
 import { uploadRouter } from "./uploadThing";
 import { createRouteHandler } from "uploadthing/express";
 import { Webhook } from "svix";
@@ -8,12 +9,14 @@ import bodyParser from "body-parser";
 import { WebhookEvent } from "../types";
 import { prismaClient as prisma } from "./lib/db";
 import customCorsOptions from "./lib/customCorsOptions";
-
 const dotenv = require("dotenv");
 
 dotenv.config();
 
+const CLIENT_DOMAIN = process.env.REACT_PUBLIC_SERVER_URL;
+
 const app = express();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const PORT = Number(process.env.PORT) || 8000;
 
@@ -95,9 +98,111 @@ app.post(
   }
 );
 
-app.use(express.urlencoded({ extended: false }));
-app.use(cors(customCorsOptions));
+app.post(
+  "/api/webhook/stripe",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const sig = req.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig!,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+    } catch (err) {
+      res.status(400).send(`Webhook Error: ${err}`);
+      return;
+    }
+
+    const eventType = event.type;
+    // Handle the event
+    if (eventType === "checkout.session.completed") {
+      const { id, amount_total, metadata } = event.data.object;
+
+      const order = {
+        stripeId: id,
+        eventId: metadata?.eventId || "",
+        buyerId: metadata?.buyerId || "",
+        totalAmount: amount_total ? (amount_total / 100).toString() : "0",
+        createdAt: new Date(),
+      };
+
+      try {
+        const newOrder = await prisma.order.create({
+          data: {
+            stripeId: order.stripeId,
+            totalAmount: order.totalAmount,
+            createdAt: order.createdAt,
+            buyer: {
+              connect: {
+                clerkId: order.buyerId,
+              },
+            },
+            event: {
+              connect: {
+                id: order.eventId,
+              },
+            },
+          },
+        });
+        res.send(newOrder);
+      } catch (error) {
+        console.error(error);
+      }
+
+      // Return a 200 response to acknowledge receipt of the event
+    }
+  }
+);
+
 app.use(express.json());
+app.use(cors(customCorsOptions));
+app.post(
+  "/api/checkoutOrder",
+
+  async (req, res) => {
+    const { order } = req.body;
+
+    const { eventTitle, eventId, price, isFree, buyerId } = order;
+
+    const productPrice = isFree ? 0 : Number(price) * 100;
+
+    try {
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: "inr",
+              unit_amount: productPrice,
+              product_data: {
+                name: eventTitle,
+              },
+            },
+            quantity: 1,
+          },
+        ],
+        metadata: {
+          eventId,
+          buyerId,
+        },
+        mode: "payment",
+        success_url: `${CLIENT_DOMAIN}?success=true`,
+        cancel_url: `${CLIENT_DOMAIN}?canceled=true`,
+      });
+
+      res.status(200).json({ id: session.id });
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+);
+
+app.use(express.urlencoded({ extended: false }));
+
 app.use(
   "/api/uploadthing",
   createRouteHandler({

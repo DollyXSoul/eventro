@@ -14,20 +14,21 @@ datasource db {
 }
 
 model User {
-  clerkId String @id @unique
-  email String @unique
-  username String @unique @map("user_name")
-  firstName String @map("first_name")
-  lastName String @map("last_name")
-  photo String? @map("photo_url")
-  events   Event[]
+  clerkId    String @id @unique
+  email      String @unique
+  username   String @unique @map("user_name")
+  firstName  String @map("first_name")
+  lastName   String @map("last_name")
+  photo      String? @map("photo_url")
+  events     Event[]
+  orders     Order[]
   @@map("users")
 }
 
 
 model Category {
-  id    String  @id @default(uuid())
-  name  String  @unique
+  id       String  @id @default(uuid())
+  name     String  @unique
   events   Event[]
   @@map("categories")
 }
@@ -47,6 +48,18 @@ model Event {
   url           String?    
   categoryId    String
   organizerId   String
+  order         Order[]
   category      Category @relation(fields: [categoryId] , references:[id])
   organizer     User      @relation(fields : [organizerId] , references: [clerkId])
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  createdAt   DateTime @default(now())
+  stripeId    String   @unique
+  totalAmount String?
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  buyerId     String
+  buyer       User     @relation(fields: [buyerId], references: [clerkId])
 }

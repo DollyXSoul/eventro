@@ -97,6 +97,14 @@ export type RemoveUrlQueryParams = {
   keysToRemove: string[];
 };
 
+export type CheckoutOrderParams = {
+  eventTitle: string;
+  eventId: string;
+  price: string;
+  isFree: boolean;
+  buyerId: string;
+};
+
 export const uploadRouter = {
   imageUploader: f({
     image: {
