@@ -1,9 +1,10 @@
 import Collection from "@/components/shared/Collection";
 import { Button } from "@/components/ui/button";
 import { getEventsByUser } from "@/api/events";
+import { getOrdersByUser } from "@/api/order";
 import { useAuth } from "@clerk/clerk-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { EventsApiResponse } from "@/types";
+import { EventItem, EventsApiResponse, OrderApiResponse } from "@/types";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
@@ -16,6 +17,10 @@ const Profile = () => {
     data: [],
     totalPages: 0,
   });
+  const [orderedEvents, setOrderedEvents] = useState<EventsApiResponse>({
+    data: [],
+    totalPages: 0,
+  });
 
   useEffect(() => {
     const getEvents = async () => {
@@ -25,8 +30,22 @@ const Profile = () => {
           page,
           limit: 2,
         });
+        const orderRes = await getOrdersByUser({
+          userId,
+          page,
+          limit: 2,
+        });
 
         res && setOrganizedEvents(res);
+
+        let events: EventItem[] = [];
+        if (orderRes) {
+          events = orderRes.data.map((order) => order.event);
+          setOrderedEvents({
+            data: events,
+            totalPages: orderRes.totalPages,
+          });
+        }
       }
     };
 
@@ -43,6 +62,19 @@ const Profile = () => {
             <Link to="/#events">Explore More Events</Link>
           </Button>
         </div>
+      </section>
+
+      <section className="wrapper my-8">
+        <Collection
+          data={orderedEvents.data}
+          emptyTitle="No event tickets purchased yet"
+          emptyStateSubtext="No worries - plenty of exciting events to explore!"
+          collectionType="My_Tickets"
+          limit={3}
+          page={1}
+          urlParamName="ordersPage"
+          totalPages={orderedEvents?.totalPages}
+        />
       </section>
 
       {/* Events Organized */}

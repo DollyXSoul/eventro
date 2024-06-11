@@ -81,6 +81,25 @@ export interface EventItem extends Event {
   organizer: Organizer;
 }
 
+export type Order = {
+  id: string;
+  createdAt: Date;
+  stripeId: string;
+  totalAmount?: string;
+  eventId: string;
+  buyerId: string;
+};
+
+export interface OrderItem extends Order {
+  buyer: Organizer;
+  event: EventItem;
+}
+
+export interface OrderApiResponse {
+  data: OrderItem[];
+  totalPages: number;
+}
+
 export interface EventsApiResponse {
   data: EventItem[];
   totalPages: number;
@@ -103,6 +122,11 @@ export type CheckoutOrderParams = {
   price: string;
   isFree: boolean;
   buyerId: string;
+};
+export type GetOrdersByUserParams = {
+  userId: string;
+  limit: number;
+  page: number;
 };
 
 export const uploadRouter = {

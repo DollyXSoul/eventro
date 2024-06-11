@@ -1,6 +1,10 @@
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
-import { CheckoutOrderParams } from "@/types";
+import {
+  CheckoutOrderParams,
+  GetOrdersByUserParams,
+  OrderApiResponse,
+} from "@/types";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
@@ -19,3 +23,30 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
     throw error;
   }
 };
+
+export async function getOrdersByUser({
+  userId,
+  limit = 3,
+  page,
+}: GetOrdersByUserParams) {
+  try {
+    const data = await axios.get(`${BASE_URL}/api/orders/by-user`, {
+      params: {
+        userId,
+        page,
+        limit,
+      },
+    });
+
+    const res: OrderApiResponse = data.data;
+    // const pageCount: Number = data.data.totalPages;
+    console.log(res);
+    return res;
+  } catch (error) {
+    console.error(error);
+    return {
+      data: [],
+      totalPages: 0,
+    };
+  }
+}

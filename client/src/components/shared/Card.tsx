@@ -1,18 +1,18 @@
-import { EventApiResponse } from "@/types";
+import { EventItem } from "@/types";
 import { formatDateTime } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import { SquarePen, ArrowRight } from "lucide-react";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 type CardProps = {
-  event: EventApiResponse;
+  event: EventItem;
   hasOrderLink?: boolean;
   hidePrice?: boolean;
 };
 
 const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
   const { userId } = useAuth();
-  const isEventCreator = userId === event.organizer.clerkId;
+  const isEventCreator = userId === event.organizerId;
 
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-lg md:min-h-[438px]">

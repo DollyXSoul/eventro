@@ -189,8 +189,8 @@ app.post(
           buyerId,
         },
         mode: "payment",
-        success_url: `${CLIENT_DOMAIN}?success=true`,
-        cancel_url: `${CLIENT_DOMAIN}?canceled=true`,
+        success_url: `${CLIENT_DOMAIN}/profile`,
+        cancel_url: `${CLIENT_DOMAIN}/`,
       });
 
       res.status(200).json({ id: session.id });
@@ -479,6 +479,48 @@ app.get("/api/events/by-user", async (req: Request, res: Response) => {
     res.json({
       data: events,
       totalPages: Math.ceil(eventsCount / Number(limit)),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.get("/api/orders/by-user", async (req: Request, res: Response) => {
+  const userId = req.query.query as string | undefined;
+  const limit = Number(req.query.limit) || 3;
+  const page = Number(req.query.page) || 1;
+
+  try {
+    const skipAmount = (Number(page) - 1) * Number(limit);
+
+    const orders = await prisma.order.findMany({
+      where: { buyerId: userId },
+      skip: skipAmount,
+      take: Number(limit),
+      orderBy: { createdAt: "desc" },
+      include: {
+        event: {
+          include: {
+            organizer: {
+              select: {
+                firstName: true,
+                lastName: true,
+                clerkId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const orderCount = await prisma.order.count({
+      where: { buyerId: userId },
+    });
+
+    res.json({
+      data: orders,
+      totalPages: Math.ceil(orderCount / Number(limit)),
     });
   } catch (error) {
     console.error(error);
