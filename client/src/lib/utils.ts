@@ -51,6 +51,16 @@ export const formatDateTime = (dateString: Date) => {
   };
 };
 
+export const formatPrice = (price: string) => {
+  const amount = parseFloat(price);
+  const formattedPrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "INR",
+  }).format(amount);
+
+  return formattedPrice;
+};
+
 export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
 
 export function formUrlQuery({ params, key, value }: UrlQueryParams) {

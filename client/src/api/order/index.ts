@@ -4,6 +4,8 @@ import {
   CheckoutOrderParams,
   GetOrdersByUserParams,
   OrderApiResponse,
+  GetOrdersByEventParams,
+  OrderDetail,
 } from "@/types";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -39,8 +41,6 @@ export async function getOrdersByUser({
     });
 
     const res: OrderApiResponse = data.data;
-    // const pageCount: Number = data.data.totalPages;
-    console.log(res);
     return res;
   } catch (error) {
     console.error(error);
@@ -48,5 +48,24 @@ export async function getOrdersByUser({
       data: [],
       totalPages: 0,
     };
+  }
+}
+
+export async function getOrdersByEvent({
+  searchString,
+  eventId,
+}: GetOrdersByEventParams) {
+  try {
+    const data = await axios.get(`${BASE_URL}/api/orders/by-event`, {
+      params: {
+        eventId,
+        searchString,
+      },
+    });
+    const res: OrderDetail[] = data.data;
+    return res;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
 }

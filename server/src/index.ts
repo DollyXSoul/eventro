@@ -456,7 +456,11 @@ app.get("/api/events/by-user", async (req: Request, res: Response) => {
     const skipAmount = (Number(page) - 1) * Number(limit);
 
     const events = await prisma.event.findMany({
-      where: { organizerId: userId },
+      where: {
+        organizerId: {
+          equals: userId,
+        },
+      },
       skip: skipAmount,
       take: Number(limit),
       orderBy: { createdAt: "desc" },
@@ -487,7 +491,7 @@ app.get("/api/events/by-user", async (req: Request, res: Response) => {
 });
 
 app.get("/api/orders/by-user", async (req: Request, res: Response) => {
-  const userId = req.query.query as string | undefined;
+  const userId = req.query.userId as string | undefined;
   const limit = Number(req.query.limit) || 3;
   const page = Number(req.query.page) || 1;
 
@@ -522,6 +526,47 @@ app.get("/api/orders/by-user", async (req: Request, res: Response) => {
       data: orders,
       totalPages: Math.ceil(orderCount / Number(limit)),
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.get("/api/orders/by-event", async (req, res) => {
+  const eventId = req.query.eventId as string | undefined;
+  const searchString = req.query.searchString as string | "";
+
+  if (!eventId) {
+    return res.status(400).json({ error: "Event ID is required" });
+  }
+
+  try {
+    const orders = await prisma.order.findMany({
+      where: {
+        eventId: eventId,
+        buyer: {
+          OR: [
+            { firstName: { contains: searchString, mode: "insensitive" } },
+            { lastName: { contains: searchString, mode: "insensitive" } },
+          ],
+        },
+      },
+      include: {
+        buyer: true,
+        event: true,
+      },
+    });
+
+    const formattedOrders = orders.map((order) => ({
+      id: order.id,
+      totalAmount: order.totalAmount,
+      createdAt: order.createdAt,
+      eventTitle: order.event.title,
+      eventId: order.event.id,
+      buyer: `${order.buyer.firstName} ${order.buyer.lastName}`,
+    }));
+
+    res.send(formattedOrders);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

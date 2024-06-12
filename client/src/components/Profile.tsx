@@ -4,11 +4,11 @@ import { getEventsByUser } from "@/api/events";
 import { getOrdersByUser } from "@/api/order";
 import { useAuth } from "@clerk/clerk-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { EventItem, EventsApiResponse, OrderApiResponse } from "@/types";
+import { EventItem, EventsApiResponse } from "@/types";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
-  const { userId } = useAuth();
+  const { userId, isLoaded } = useAuth();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
@@ -51,6 +51,10 @@ const Profile = () => {
 
     getEvents();
   }, [page]);
+
+  if (!isLoaded) {
+    return <div>Loading....</div>;
+  }
 
   return (
     <>

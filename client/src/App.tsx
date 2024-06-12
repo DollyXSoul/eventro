@@ -6,6 +6,7 @@ import CreateEvent from "./components/CreateEvent";
 import EventDetail from "./components/shared/EventDetail";
 import UpdateEvent from "./components/UpdateEvent";
 import Profile from "./components/Profile";
+import Orders from "./components/Orders";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/create" element={<CreateEvent />} />
             <Route path="/events/:eventId" element={<EventDetail />} />
+            <Route path="/orders/event/:eventId" element={<Orders />} />
             <Route path="/events/:eventId/update" element={<UpdateEvent />} />
           </Routes>
         </main>

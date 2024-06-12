@@ -84,7 +84,7 @@ export const getEventsByUser = async ({
   try {
     const data = await axios.get(`${BASE_URL}/api/events/by-user`, {
       params: {
-        userId,
+        query: userId,
         page,
         limit,
       },
