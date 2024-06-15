@@ -7,6 +7,8 @@ import EventDetail from "./components/shared/EventDetail";
 import UpdateEvent from "./components/UpdateEvent";
 import Profile from "./components/Profile";
 import Orders from "./components/Orders";
+import SignInPage from "./components/shared/SignInPage";
+import ProtectedRoutes from "./components/shared/ProtectedRoutes";
 
 function App() {
   return (
@@ -16,11 +18,43 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/create" element={<CreateEvent />} />
+            <Route path="/sign-in" element={<SignInPage />} />
             <Route path="/events/:eventId" element={<EventDetail />} />
-            <Route path="/orders/event/:eventId" element={<Orders />} />
-            <Route path="/events/:eventId/update" element={<UpdateEvent />} />
+          </Routes>
+
+          <Routes>
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoutes>
+                  <Profile />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoutes>
+                  <CreateEvent />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/orders/event/:eventId"
+              element={
+                <ProtectedRoutes>
+                  <Orders />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/events/:eventId/update"
+              element={
+                <ProtectedRoutes>
+                  <UpdateEvent />
+                </ProtectedRoutes>
+              }
+            />
           </Routes>
         </main>
         <Footer />
