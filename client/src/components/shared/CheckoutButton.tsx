@@ -12,7 +12,7 @@ const CheckoutButton = ({ event }: { event: Event }) => {
   return (
     <div className="flex items-center gap-3">
       {hasEventFinished ? (
-        <p className="p-2 text-red-400">
+        <p className="p-2 text-ruby-500">
           Sorry, tickets are no longer available.
         </p>
       ) : (

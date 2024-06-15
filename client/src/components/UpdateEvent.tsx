@@ -2,14 +2,14 @@ import { useAuth } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import EventForm from "./shared/EventForm";
-import { EventApiResponse } from "@/types";
+import { EventItem } from "@/types";
 import { getEventById } from "@/api/events";
 
 const UpdateEvent = () => {
   const { userId } = useAuth() as { userId: string };
   const { eventId } = useParams() as { eventId: string };
 
-  const [event, setEvent] = useState<EventApiResponse>();
+  const [event, setEvent] = useState<EventItem>();
 
   useEffect(() => {
     const getEventDetail = async () => {
@@ -24,7 +24,7 @@ const UpdateEvent = () => {
 
   return (
     <>
-      <section className="bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
+      <section className="bg-primary-50/20 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
         <h3 className="wrapper h3-bold text-center sm:text-left">
           Update Event
         </h3>

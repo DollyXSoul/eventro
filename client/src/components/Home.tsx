@@ -36,8 +36,8 @@ const Home = () => {
 
   return (
     <>
-      <section className="bg-primary-50 bg-contain py-5 md:py-10 bg-slate-200">
-        <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">
+      <section className="bg-grey-50 bg-contain py-5 md:py-10 ">
+        <div className="wrapper grid grid-cols-1 gap-5 md:grid-cols-2 2xl:gap-4">
           <div className="flex flex-col justify-center gap-8">
             <h1 className="font-bold text-[40px] leading-[48px] lg:text-[48px] lg:leading-[60px]  xl:text-[58px] xl:leading-[74px]">
               Host, Connect, Celebrate: Your Events, Our Platform!
@@ -55,9 +55,9 @@ const Home = () => {
             </Button>
           </div>
           <img
-            src={"djbjd"}
-            alt="hero.img"
-            className="max-h-[70vh] object-contain object-center 2xl:max-h-[50vh]"
+            src="/assets/images/eventro.png"
+            alt="eventro"
+            className="max-h-[80vh] object-contain object-center 2xl:max-h-[70vh] md:-mt-12 mx-auto "
           />
         </div>
       </section>

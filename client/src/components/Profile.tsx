@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 const Profile = () => {
   const { userId, isLoaded } = useAuth();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
   const [organizedEvents, setOrganizedEvents] = useState<EventsApiResponse>({
@@ -59,7 +59,7 @@ const Profile = () => {
   return (
     <>
       {/* My Tickets */}
-      <section className="bg-slate-100  bg-cover bg-center py-5 md:py-10">
+      <section className="bg-grey-50  bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className="h3-bold text-center sm:text-left">My Tickets</h3>
           <Button asChild size="lg" className="button hidden sm:flex">
@@ -82,7 +82,7 @@ const Profile = () => {
       </section>
 
       {/* Events Organized */}
-      <section className="bg-slate-100  bg-cover bg-center py-5 md:py-10">
+      <section className="bg-grey-50  bg-cover bg-center py-5 md:py-10">
         <div className="wrapper flex items-center justify-center sm:justify-between">
           <h3 className="h3-bold text-center sm:text-left">Events Organized</h3>
           <Button asChild size="lg" className="button hidden sm:flex">

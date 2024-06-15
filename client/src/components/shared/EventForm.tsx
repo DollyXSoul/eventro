@@ -23,12 +23,12 @@ import FileUploader from "./FileUploader";
 import { useUploadThing } from "@/lib/uploadThing";
 import { createEvent, updateEvent } from "@/api/events";
 import { useNavigate } from "react-router-dom";
-import { EventApiResponse } from "@/types";
+import { EventItem } from "@/types";
 
 type EventFormProps = {
   userId: string;
   type: "Create" | "Update";
-  event?: EventApiResponse;
+  event?: EventItem;
   eventId?: string;
 };
 const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
@@ -187,7 +187,7 @@ const EventForm = ({ userId, type, event, eventId }: EventFormProps) => {
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormControl>
-                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-gray-100 px-4 py-2">
+                  <div className="flex-center h-[54px] w-full overflow-hidden rounded-full bg-grey-50 px-4 py-2">
                     <MapPin />
                     <Input
                       placeholder="Event location or Online"

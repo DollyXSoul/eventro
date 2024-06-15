@@ -39,7 +39,7 @@ const EventDetail = () => {
     };
 
     getEvents();
-  }, [page]);
+  }, [page, eventId]);
 
   if (!eventDetail) {
     return <div>Showing post</div>;
@@ -48,7 +48,7 @@ const EventDetail = () => {
   return (
     <>
       {eventDetail && (
-        <section className="flex justify-center bg-primary-50 bg-dotted-pattern bg-contain">
+        <section className="flex justify-center bg-primary-50/20 bg-dotted-pattern bg-contain">
           <div className="grid grid-cols-1 md:grid-cols-2 2xl:max-w-7xl">
             <img
               src={eventDetail.imageUrl}

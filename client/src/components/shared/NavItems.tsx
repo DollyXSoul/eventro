@@ -13,7 +13,7 @@ const NavItems = () => {
           <li
             key={link.route}
             className={`${
-              isActive && "text-purple-700/95"
+              isActive && "text-primary"
             } flex items-center justify-center font-medium text-xl whitespace-nowrap`}
           >
             <Link to={link.route}>{link.label} </Link>
