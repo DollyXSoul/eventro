@@ -9,6 +9,8 @@ import bodyParser from "body-parser";
 import { WebhookEvent } from "../types";
 import { prismaClient as prisma } from "./lib/db";
 import customCorsOptions from "./lib/customCorsOptions";
+import categoryRoutes from "./routes/categoryRoutes";
+import eventRoutes from "./routes/eventRoutes";
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -160,6 +162,8 @@ app.post(
 
 app.use(express.json());
 app.use(cors(customCorsOptions));
+
+app.use("/api/categories", categoryRoutes);
 app.post(
   "/api/checkoutOrder",
 
@@ -210,284 +214,10 @@ app.use(
   })
 );
 
+app.use("/api/events", eventRoutes);
+
 app.get("/api", (req, res) => {
   res.send("Server is up and running");
-});
-
-//use middleware for parsing json
-
-app.get("/api/categories", async (req, res) => {
-  try {
-    const categories = await prisma.category.findMany();
-    console.log(categories);
-    res.send(categories);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
-  }
-});
-
-app.post("/api/category", async (req, res) => {
-  try {
-    const newCategory = await prisma.category.create({
-      data: {
-        name: req.body.name as string,
-      },
-    });
-
-    res.send(newCategory);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
-  }
-});
-app.post("/api/event", async (req, res) => {
-  const { userId, event } = req.body;
-
-  const {
-    title,
-    description,
-    location,
-    imageUrl,
-    startDateTime,
-    endDateTime,
-    isFree,
-    price,
-    url,
-    categoryId,
-  } = event;
-  try {
-    const organizer = await prisma.user.findUnique({
-      where: {
-        clerkId: userId,
-      },
-    });
-
-    if (!organizer) {
-      res.status(401).send("User does not exist");
-    }
-
-    const newEvent = await prisma.event.create({
-      data: {
-        title,
-        description,
-        location,
-        imageUrl,
-        startDateTime,
-        endDateTime,
-        isFree,
-        price,
-        url,
-        organizer: {
-          connect: {
-            clerkId: userId,
-          },
-        },
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
-      },
-    });
-
-    res.send(newEvent);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
-  }
-});
-app.put("/api/event", async (req, res) => {
-  const { userId, event } = req.body;
-
-  const {
-    title,
-    description,
-    location,
-    imageUrl,
-    startDateTime,
-    endDateTime,
-    isFree,
-    price,
-    url,
-    categoryId,
-    id,
-  } = event;
-
-  try {
-    const eventFound = await prisma.event.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!eventFound) {
-      res.status(404).send("Event does not exist");
-    }
-
-    if (eventFound?.organizerId.toString() !== userId) {
-      res.status(401).send("User not authorized to modify this event");
-    }
-
-    const updated = await prisma.event.update({
-      where: {
-        id,
-      },
-      data: {
-        title,
-        description,
-        location,
-        imageUrl,
-        startDateTime,
-        endDateTime,
-        isFree,
-        price,
-        url,
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
-      },
-    });
-
-    res.send(updated);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
-  }
-});
-
-app.get("/api/event/:eventId", async (req, res) => {
-  try {
-    const eventId = req.params.eventId;
-    const eventDetail = await prisma.event.findUnique({
-      where: {
-        id: eventId,
-      },
-      include: {
-        organizer: {
-          select: {
-            firstName: true,
-            lastName: true,
-            clerkId: true,
-          },
-        },
-        category: true,
-      },
-    });
-    //console.log(categories);
-    res.send(eventDetail);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
-  }
-});
-
-async function getAllEvents(req: Request, res: Response) {
-  //const { query, limit = 6, page = 1, category }= req.query;
-  const query = req.query.query as string | undefined;
-  const limit = Number(req.query.limit) || 6;
-  const page = Number(req.query.page) || 1;
-  const category = req.query.category as string | undefined;
-
-  try {
-    const titleCondition = query
-      ? { title: { contains: query, mode: "insensitive" as const } }
-      : {};
-    let categoryCondition: { categoryId?: string } = {};
-
-    if (category) {
-      const foundCategory = await prisma.category.findUnique({
-        where: {
-          name: category,
-        },
-      });
-      if (foundCategory) {
-        categoryCondition = { categoryId: foundCategory.id };
-      } else {
-        return res.status(404).json({ error: "Category not found" });
-      }
-    }
-
-    const conditions = {
-      AND: [titleCondition, categoryCondition],
-    };
-
-    const skipAmount = (Number(page) - 1) * Number(limit);
-
-    const events = await prisma.event.findMany({
-      where: conditions,
-      orderBy: { createdAt: "desc" },
-      skip: skipAmount,
-      take: Number(limit),
-      include: {
-        organizer: {
-          select: {
-            firstName: true,
-            lastName: true,
-            clerkId: true,
-          },
-        },
-        category: true,
-      }, // Include related category data if needed
-    });
-
-    const eventsCount = await prisma.event.count({
-      where: conditions,
-    });
-
-    res.json({
-      data: events,
-      totalPages: Math.ceil(eventsCount / limit),
-    });
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-
-app.get("/api/events/by-user", async (req: Request, res: Response) => {
-  const userId = req.query.query as string | undefined;
-  const limit = Number(req.query.limit) || 6;
-  const page = Number(req.query.page) || 1;
-
-  try {
-    const skipAmount = (Number(page) - 1) * Number(limit);
-
-    const events = await prisma.event.findMany({
-      where: {
-        organizerId: {
-          equals: userId,
-        },
-      },
-      skip: skipAmount,
-      take: Number(limit),
-      orderBy: { createdAt: "desc" },
-      include: {
-        organizer: {
-          select: {
-            firstName: true,
-            lastName: true,
-            clerkId: true,
-          },
-        },
-        category: true,
-      },
-    });
-
-    const eventsCount = await prisma.event.count({
-      where: { organizerId: userId },
-    });
-
-    res.json({
-      data: events,
-      totalPages: Math.ceil(eventsCount / Number(limit)),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 });
 
 app.get("/api/orders/by-user", async (req: Request, res: Response) => {
@@ -570,24 +300,6 @@ app.get("/api/orders/by-event", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-app.get("/api/events", getAllEvents);
-
-app.delete("/api/event/:eventId", async (req, res) => {
-  try {
-    const eventId = req.params.eventId;
-    const result = await prisma.event.delete({
-      where: {
-        id: eventId,
-      },
-    });
-    //console.log(categories);
-    res.send(result);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error ");
   }
 });
 

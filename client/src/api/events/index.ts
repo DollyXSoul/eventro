@@ -12,7 +12,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const createEvent = async ({ userId, event }: CreateEventParams) => {
   try {
-    const data = await axios.post(`${BASE_URL}/api/event`, {
+    const data = await axios.post(`${BASE_URL}/api/events`, {
       userId,
       event,
     });
@@ -26,7 +26,7 @@ export const createEvent = async ({ userId, event }: CreateEventParams) => {
 };
 export const updateEvent = async ({ userId, event }: UpdateEventParams) => {
   try {
-    const data = await axios.put(`${BASE_URL}/api/event`, {
+    const data = await axios.put(`${BASE_URL}/api/events`, {
       userId,
       event,
     });
@@ -40,7 +40,7 @@ export const updateEvent = async ({ userId, event }: UpdateEventParams) => {
 };
 export const getEventById = async ({ eventId }: { eventId: string }) => {
   try {
-    const data = await axios.get(`${BASE_URL}/api/event/${eventId}`);
+    const data = await axios.get(`${BASE_URL}/api/events/${eventId}`);
 
     const res: EventItem = data.data;
     return res;
@@ -104,7 +104,7 @@ export const getEventsByUser = async ({
 
 export const deleteEvent = async ({ eventId }: { eventId: string }) => {
   try {
-    const data = await axios.delete(`${BASE_URL}/api/event/${eventId}`);
+    const data = await axios.delete(`${BASE_URL}/api/events/${eventId}`);
 
     const res = data;
     console.log(res.data);
