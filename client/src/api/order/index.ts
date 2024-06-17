@@ -13,7 +13,7 @@ const PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 export const checkoutOrder = async (order: CheckoutOrderParams) => {
   const stripe = await loadStripe(PUBLIC_KEY);
   try {
-    const response = await axios.post(`${BASE_URL}/api/checkoutOrder`, {
+    const response = await axios.post(`${BASE_URL}/api/orders/checkout`, {
       order,
     });
 
