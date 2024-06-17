@@ -42,7 +42,7 @@ export const DeleteConfirmation = ({ eventId }: { eventId: string }) => {
           <AlertDialogAction
             onClick={() => {
               startTransition(() => {
-                deleteEvent({ eventId }).then(() => navigate(0));
+                deleteEvent({ eventId }).then(() => navigate("/profile"));
               });
             }}
           >

@@ -18,7 +18,7 @@ export const createCategory = async ({
   categoryName,
 }: CreateCategoryParams) => {
   try {
-    const data = await axios.post(`${BASE_URL}/api/category`, {
+    const data = await axios.post(`${BASE_URL}/api/categories`, {
       name: categoryName,
     });
 
