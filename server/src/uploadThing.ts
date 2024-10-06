@@ -1,10 +1,10 @@
 //import { request, response } from "express";
-import { createUploadthing, type FileRouter } from "uploadthing/express";
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 
 //const auth = (req: typeof request) => ({ id: "fakeId" }); // Fake auth function
 
 const f = createUploadthing({
-  errorFormatter: (err) => {
+  errorFormatter: (err: any) => {
     console.log("Error uploading file", err.message);
     console.log("Above error caused by:", err.cause);
 
