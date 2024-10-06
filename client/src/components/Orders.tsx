@@ -8,7 +8,7 @@ import { OrderDetail } from "@/types";
 const Orders = () => {
   const { eventId } = useParams<string>() as { eventId: string };
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const searchString = searchParams.get("query") || "";
 
   const [orders, setOrders] = useState<OrderDetail[]>([]);

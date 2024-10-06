@@ -20,6 +20,7 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
     const result = await stripe?.redirectToCheckout({
       sessionId: response.data.id,
     });
+    console.log(result);
   } catch (error) {
     console.error(error);
     throw error;

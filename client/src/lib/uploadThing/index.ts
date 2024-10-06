@@ -1,5 +1,5 @@
 import { generateReactHelpers } from "@uploadthing/react";
-import { OurFileRouter } from "../../../../server/src/uploadThing";
+import type { OurFileRouter } from "../../../../server/src/uploadThing";
 
 const ROUTER_URL = import.meta.env.VITE_FILE_ROUTER_URL;
 

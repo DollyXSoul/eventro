@@ -7,7 +7,7 @@ import Search from "./shared/Search";
 import { useSearchParams } from "react-router-dom";
 import CategoryFilter from "./shared/CategoryFilter";
 const Home = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const page = Number(searchParams.get("page")) || 1;
   const searchText = searchParams.get("query") || "";
